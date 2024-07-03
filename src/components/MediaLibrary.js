@@ -5,7 +5,7 @@ import { formatFileSize, formatDuration } from '../utils';
 const MediaLibrary = ({ onDragStart }) => {
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // 每页显示的项目数
+  const itemsPerPage = 5;
 
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files);
@@ -75,15 +75,10 @@ const MediaLibrary = ({ onDragStart }) => {
     });
   }, [items, handleMetadata]);
 
-  // 计算当前页显示的项目
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
-
-  // 计算总页数
   const totalPages = Math.ceil(items.length / itemsPerPage);
-
-  // 切换页面
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
@@ -108,7 +103,10 @@ const MediaLibrary = ({ onDragStart }) => {
               key={indexOfFirstItem + index}
               className="bg-white p-2 rounded-lg shadow mb-2 flex justify-between items-center max-w-full"
               draggable
-              onDragStart={(e) => onDragStart(e, item)}
+              onDragStart={(e) => {
+                e.dataTransfer.setData('application/json', JSON.stringify(item));
+                if (onDragStart) onDragStart(e, item);
+              }}
             >
               {item.type === 'video' ? (
                 <img

@@ -9,7 +9,7 @@ function App() {
   const [videoSrc, setVideoSrc] = useState('');
 
   const handleDragStart = (e, item) => {
-    e.dataTransfer.setData('video', JSON.stringify(item));
+    e.dataTransfer.setData('application/json', JSON.stringify(item));
   };
 
   const handleDrop = (item) => {
@@ -27,11 +27,11 @@ function App() {
   return (
     <div className="flex flex-col h-screen">
       <Header title="Video Editor" />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-auto">
         <div className="flex flex-col w-1/6 h-full py-2 pl-2">
           <MediaLibrary onDragStart={handleDragStart} />
         </div>
-        <div className="flex flex-col flex-1 space-y-2 h-full p-2">
+        <div className="flex flex-col flex-1 space-y-2 h-full p-2 overflow-hidden">
           <VideoPlayer src={videoSrc} />
           <Timeline onDrop={handleDrop} />
         </div>
