@@ -37,7 +37,36 @@ body {
   overflow: hidden;
 }
 
+.overflow-auto {
+  overflow: auto;
+}
+
 .space-y-4>*+* {
   margin-top: 1rem;
   /* Adjust as needed */
+}
+
+.h-full {
+  height: 100%;
+}
+
+/* src/index.css */
+
+/* 自定义滚动条 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #999;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
