@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FaTrashAlt, FaFileUpload } from 'react-icons/fa';
 import { formatFileSize, formatDuration } from '../utils';
 
-const MediaLibrary = ({ onDragStart }) => {
+const MediaLibrary = ({ onDragStart, onRemove }) => {
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -25,8 +25,10 @@ const MediaLibrary = ({ onDragStart }) => {
   };
 
   const handleRemove = (index) => {
+    const item = items[index];
     const newItems = items.filter((_, i) => i !== index);
     setItems(newItems);
+    if (onRemove) onRemove(item);
   };
 
   const handleMetadata = useCallback((index, metadata, poster) => {

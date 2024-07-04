@@ -1,13 +1,21 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { FaSearchPlus, FaSearchMinus } from 'react-icons/fa';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { FaSearchPlus, FaSearchMinus, FaTrashAlt } from 'react-icons/fa';
 import debounce from 'lodash/debounce';
 import { Button } from './ui';
 
-const Timeline = ({ onDrop }) => {
-  const [zoom, setZoom] = useState(0.2);  // 默认缩放级别设为0.3
-  const [tracks, setTracks] = useState([]);
-  const [duration, setDuration] = useState(0);
+const Timeline = ({ onDrop, tracks, setTracks }) => {
+  const [duration, setDuration] = useState(3600); // 默认初始化为1小时
+  const [zoom, setZoom] = useState(0.2); // 默认缩放级别设为0.2
   const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (tracks.length === 0) {
+      setDuration(3600); // 重置为默认1小时
+      setZoom(0.2); // 重置缩放级别
+    } else {
+      setDuration(Math.max(...tracks.map(track => track.duration)));
+    }
+  }, [tracks]);
 
   const updateZoom = useCallback(
     debounce((newZoom) => {
@@ -54,7 +62,10 @@ const Timeline = ({ onDrop }) => {
       position: 0,
     };
     setTracks([...tracks, newTrack]);
-    setDuration(Math.max(duration, media.duration));
+  };
+
+  const handleTrackRemove = (trackId) => {
+    setTracks(tracks.filter(track => track.id !== trackId));
   };
 
   const renderTimelineMarkers = () => {
@@ -69,7 +80,7 @@ const Timeline = ({ onDrop }) => {
           style={{ left: `${(time / duration) * 100}%` }}
         >
           {time % (interval * 2) === 0 && (
-            <span className="text-sm text-gray-700" style={{ transform: `scale(${1 / zoom})`, transformOrigin: 'left' }}>
+            <span className="text-xs text-gray-700" style={{ transform: `scale(${1 / zoom})`, transformOrigin: 'left' }}>
               {formatTime(time)}
             </span>
           )}
@@ -101,7 +112,7 @@ const Timeline = ({ onDrop }) => {
     return tracks.map((track) => (
       <div
         key={track.id}
-        className={`relative h-16 bg-${track.type === 'video' ? 'gray-300' : 'gray-400'} mb-2  bg-blue-500`}
+        className={`relative h-16 bg-${track.type === 'video' ? 'gray-300' : 'gray-400'} mb-2 bg-blue-500`}
         style={{ width: `${track.duration * zoom}px` }}
       >
         <div className="absolute top-0 left-0 h-full flex items-center justify-between px-2">
@@ -109,6 +120,12 @@ const Timeline = ({ onDrop }) => {
           <div className="text-gray-700">
             Duration: {formatTime(track.duration)}
           </div>
+          <button
+            className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded"
+            onClick={() => handleTrackRemove(track.id)}
+          >
+            <FaTrashAlt />
+          </button>
         </div>
         <div className="absolute top-0 left-0 h-full" draggable>
           <img src={track.src} alt={`track-${track.id}`} className="w-full h-full object-cover" />
