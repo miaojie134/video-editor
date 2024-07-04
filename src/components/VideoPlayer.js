@@ -10,7 +10,7 @@ const VideoPlayer = ({ src, brightness, contrast }) => {
   }, [brightness, contrast]);
 
   return (
-    <div className="relative w-full h-1/2" style={{ paddingTop: '56.25%' }}>
+    <div className="relative w-full h-full">
       <video
         ref={videoRef}
         className="absolute top-0 left-0 w-full h-full"

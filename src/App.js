@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import VideoPlayer from './components/VideoPlayer';
 import Timeline from './components/Timeline';
-import EditingTools from './components/EditingTools';
 import MediaLibrary from './components/MediaLibrary';
 
 function App() {
@@ -18,25 +17,20 @@ function App() {
     }
   };
 
-  const tools = [
-    { id: 'brightness', label: 'Brightness', defaultValue: 50 },
-    { id: 'contrast', label: 'Contrast', defaultValue: 50 },
-    // 添加其他工具
-  ];
-
   return (
     <div className="flex flex-col h-screen">
       <Header title="Video Editor" />
       <div className="flex flex-1 overflow-auto">
-        <div className="flex flex-col w-1/6 h-full py-2 pl-2">
+        <div className="flex flex-col h-full py-2 pl-2 w-1/4">
           <MediaLibrary onDragStart={handleDragStart} />
         </div>
-        <div className="flex flex-col flex-1 space-y-2 h-full p-2 overflow-hidden">
-          <VideoPlayer src={videoSrc} />
-          <Timeline onDrop={handleDrop} />
-        </div>
-        <div className="flex flex-col w-1/6 h-full py-2 pr-2">
-          <EditingTools tools={tools} />
+        <div className="flex flex-col flex-1 h-full p-2 space-y-2 w-4/6">
+          <div className="flex-1 h-1/2 w-1/2">
+            <VideoPlayer src={videoSrc} />
+          </div>
+          <div className="flex-1 h-1/2 ">
+            <Timeline onDrop={handleDrop} />
+          </div>
         </div>
       </div>
     </div>
