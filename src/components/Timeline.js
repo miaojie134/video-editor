@@ -1,11 +1,13 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { FaSearchPlus, FaSearchMinus, FaTrashAlt } from 'react-icons/fa';
+import { FaSearchPlus, FaSearchMinus } from 'react-icons/fa';
 import debounce from 'lodash/debounce';
 import { Button } from './ui';
+import ContextMenu from './ContextMenu';  // 导入自定义右键菜单组件
 
 const Timeline = ({ onDrop, tracks, setTracks }) => {
   const [duration, setDuration] = useState(3600); // 默认初始化为1小时
   const [zoom, setZoom] = useState(0.2); // 默认缩放级别设为0.2
+  const [contextMenu, setContextMenu] = useState(null);  // 管理右键菜单状态
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -66,6 +68,15 @@ const Timeline = ({ onDrop, tracks, setTracks }) => {
 
   const handleTrackRemove = (trackId) => {
     setTracks(tracks.filter(track => track.id !== trackId));
+    setContextMenu(null); // 关闭右键菜单
+  };
+
+  const handleContextMenu = (event, trackId) => {
+    event.preventDefault();
+    setContextMenu({
+      trackId,
+      position: { x: event.clientX, y: event.clientY },
+    });
   };
 
   const renderTimelineMarkers = () => {
@@ -114,18 +125,13 @@ const Timeline = ({ onDrop, tracks, setTracks }) => {
         key={track.id}
         className={`relative h-16 bg-${track.type === 'video' ? 'gray-300' : 'gray-400'} mb-2 bg-blue-500`}
         style={{ width: `${track.duration * zoom}px` }}
+        onContextMenu={(e) => handleContextMenu(e, track.id)}
       >
         <div className="absolute top-0 left-0 h-full flex items-center justify-between px-2">
           <div className="text-gray-700">{track.type === 'video' ? 'Video' : 'Audio'} Track</div>
           <div className="text-gray-700">
             Duration: {formatTime(track.duration)}
           </div>
-          <button
-            className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded"
-            onClick={() => handleTrackRemove(track.id)}
-          >
-            <FaTrashAlt />
-          </button>
         </div>
         <div className="absolute top-0 left-0 h-full" draggable>
           <img src={track.src} alt={`track-${track.id}`} className="w-full h-full object-cover" />
@@ -170,6 +176,13 @@ const Timeline = ({ onDrop, tracks, setTracks }) => {
           </div>
         </div>
       </div>
+      {contextMenu && (
+        <ContextMenu
+          position={contextMenu.position}
+          onDelete={handleTrackRemove}
+          trackId={contextMenu.trackId}
+        />
+      )}
     </div>
   );
 };
